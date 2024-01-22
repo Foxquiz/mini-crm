@@ -1,4 +1,4 @@
-// (async () => {
+(async () => {
 let clientsArray = [];
 // const section = document.querySelector('#section');
 const clientsTable = document.querySelector('#clientsTable');
@@ -133,7 +133,7 @@ function renderClientsTable(clientsArray) {
     loadingRow('');
   } else {
     // sortingArray(clientsArray)
-    clientsArray.forEach(element => {
+    sortArray(clientsArray).forEach(element => {
       renderClient(element, handlers);
     });
   }
@@ -200,16 +200,23 @@ function renderClient(objClient) {
 
   //слухачи на кнопки
   $deleteBtn.addEventListener('click', () => {
+    $deleteBtn.disabled = true; //убрать возможность нажимать на кнопки при открытии модального окна
     createModalDeleteClient(objClient, $row);
     // refreshStudentList();
   });
   //? сделать без асинхронности (увести в другую функцию? вряд ли=( ), должна будет быть отрисовка модульного окна в зависимости от нажатия на ту или иную кнопку
   $changeBtn.addEventListener('click', async (e) => {
+    $changeBtn.disabled = true; //убрать возможность нажимать на кнопки при открытии модального окна
     const response = await fetch(`http://localhost:3000/api/clients/${objClient.id}`);
     const clientElement = await response.json();
     createModalEditClient(clientElement);
     // onChange({ clientElement });
   });
+}
+
+//вернуть возможность нажимать на кнопки при открытии модального окна
+function enableButtons(btn) {
+  btn.disabled = false;
 }
 
 function getTime(objTime) {
@@ -233,12 +240,8 @@ const modal = document.querySelector('#modal');
 //Реагирование на нажатие кнопок
 //модальное окно создания нового клиента (чистить окно и создавать новое в идеале)
 addClientBtn.addEventListener('click', (e) => {
+  addClientBtn.disabled = true; //убрать возможность нажимать на кнопки при открытии модального окна
   createModalAddClient();
-  // let errorfield = document.querySelector('#errorField');
-  // errorfield.replaceChildren();
-  // let path = e.currentTarget.getAttribute('data-path');
-  // document.querySelector(`[data-target="${path}"]`).classList.add('modal--visible');
-  // modal.classList.add('modal-overlay--visible');
 });
 
 //модальное окно создания
@@ -576,7 +579,11 @@ function createModalEditClient(objClient) {
     $form.classList.add('modal-contacts__form');
     $contactsForm.prepend($form);
     $contactsForm.parentElement.classList.remove('modal-contacts--form');
-    createContactSelect($form, objClient.contacts);
+    objClient.contacts.forEach((contact) => {
+      createContactSelect($form, contact);
+
+    })
+    // createContactSelect($form, objClient.contacts);
   }
 
   //убирать placeholder если появились символы в инпуте
@@ -647,6 +654,8 @@ function createModalEditClient(objClient) {
 function closeModal() {
   modal.classList.remove('modal-overlay--visible');
   modal.replaceChildren();
+  console.log(document.body.querySelectorAll('button'));
+  document.body.querySelectorAll('button').forEach((btn) => enableButtons(btn));
 }
 
 document.addEventListener('click', (e) => {
@@ -664,22 +673,46 @@ function placeInputPlaceholder(input, placeholder) {
   !input.value ? placeholder.classList.add(liftPlaceholder) : placeholder.classList.remove(liftPlaceholder);
 }
 
+function ckechContactsQty(form) {
+  const contactsQty = form.querySelectorAll('#contact-type').length;
+  console.log(contactsQty);
+
+  let result = contactsQty === 10 ? false : true;
+  return result;
+}
+
 function createContactSelect(box, contactsArray = false) {
   console.log('contactsArray', contactsArray);
   if (!contactsArray) {
     const $select = document.createElement('select');
     const $input = document.createElement('input');
+    const $deleteBtn = document.createElement('button');
+
     $select.classList.add('modal-contacts__contact-select');
-    $select.id = "contact-type";
+    $select.id = 'contact-type';
     $input.classList.add('modal-contacts__input');
     $input.id = 'contact-input';
+
+    $deleteBtn.classList.add('btn', 'modal-contacts__delbtn');
+    $deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+    <path
+      d="M6 0C2.682 0 0 2.682 0 6C0 9.318 2.682 12 6 12C9.318 12 12 9.318 12 6C12 2.682 9.318 0 6 0ZM6 10.8C3.354 10.8 1.2 8.646 1.2 6C1.2 3.354 3.354 1.2 6 1.2C8.646 1.2 10.8 3.354 10.8 6C10.8 8.646 8.646 10.8 6 10.8ZM8.154 3L6 5.154L3.846 3L3 3.846L5.154 6L3 8.154L3.846 9L6 6.846L8.154 9L9 8.154L6.846 6L9 3.846L8.154 3Z"
+      fill="#B0B0B0" />
+  </svg>`;
+
+    $deleteBtn.addEventListener('click', () => {
+      $select.remove();
+      $input.remove();
+      $deleteBtn.remove();
+    })
+
     contactsType.forEach((type) => {
       const $option = document.createElement('option');
       $option.value = type;
       $option.innerText = type;
       $select.append($option);
     })
-    box.append($select, $input);
+    box.append($select, $input, $deleteBtn);
     return
   }
 
@@ -688,10 +721,28 @@ function createContactSelect(box, contactsArray = false) {
     console.log('contact.type', contact.type);
     const $select = document.createElement('select');
     const $input = document.createElement('input');
+    const $deleteBtn = document.createElement('button');
+
+
     $select.classList.add('modal-contacts__contact-select');
     $select.id = "contact-type";
+
     $input.classList.add('modal-contacts__input');
     $input.id = 'contact-input';
+
+    $deleteBtn.classList.add('btn', 'modal-contacts__delbtn');
+    $deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+    <path
+      d="M6 0C2.682 0 0 2.682 0 6C0 9.318 2.682 12 6 12C9.318 12 12 9.318 12 6C12 2.682 9.318 0 6 0ZM6 10.8C3.354 10.8 1.2 8.646 1.2 6C1.2 3.354 3.354 1.2 6 1.2C8.646 1.2 10.8 3.354 10.8 6C10.8 8.646 8.646 10.8 6 10.8ZM8.154 3L6 5.154L3.846 3L3 3.846L5.154 6L3 8.154L3.846 9L6 6.846L8.154 9L9 8.154L6.846 6L9 3.846L8.154 3Z"
+      fill="#B0B0B0" />
+  </svg>`;
+
+    $deleteBtn.addEventListener('click', () => {
+      $select.remove();
+      $input.remove();
+      $deleteBtn.remove();
+    })
+
     contactsType.forEach((type) => {
       const $option = document.createElement('option');
       $option.value = type;
@@ -706,7 +757,8 @@ function createContactSelect(box, contactsArray = false) {
       }
       $select.append($option);
     })
-    box.append($select, $input);
+    box.append($select, $input, $deleteBtn);
+
   })
 
   return
@@ -770,19 +822,78 @@ function validateInput(inputElement) {
   return checkedInput;
 }
 
-console.log(clientsArray);
-
-Promise
-  .all([getClientsArray()])
-  .then(responses => {
-    for (let response of responses) {
-      console.log(response);
-      renderClientsTable(response);
+//*сортировка
+const clientsTableHead = document.querySelector('#tableTR');
+let dir = false;
+let keys = [];
+//функция сортировки по клику
+function sortArray(array) {
+  clientsTableHead.onclick = async function (e) {
+    //убираем стрелки в начальное положение, чтобы менять только нужную
+    let tableHeadBtns = this.querySelectorAll('.arrow');
+    tableHeadBtns.forEach((btn) => btn.classList.remove('arrow--rotate'));
+    //вычисление ключа и направления сортировки
+    let sortByElement = e.target;
+    console.log(sortByElement);
+    let target = sortByElement.id;
+    switch (target) {
+      case 'clientsId':
+        keys = ['id'];
+        break;
+      case 'fullname':
+        keys = ['lastName', 'name', 'surname'];
+        break;
+      case 'creationDate':
+        keys = ['createdAt'];
+        break;
+      case 'editDate':
+        keys = ['updatedAt'];
+        break;
     }
-  });
-// clientsArray = await getClientsArray();
-// renderClientsTable(clientsArray);
+    // dir = sortByElement.dataset.dir === 'true' ? true : false;
+    if (sortByElement.dataset.dir === 'true') {
+      sortByElement.classList.add('arrow--rotate');
+      dir = true;
+    };
+    if (!(sortByElement.dataset.dir === 'true')) {
+      sortByElement.classList.remove('arrow--rotate');
+      dir = false;
+    };
+    sortByElement.dataset.dir = !dir;
+    clientsArray = await getClientsArray();
+    renderClientsTable(clientsArray);
+  }
+  return sortArrayElement(array, dir, keys);
+}
+//функция сортировки по вводным данным
+function sortArrayElement(array, dir = false, keys) {
+  let sortedArray = [...array];
+  if (keys != undefined) {
+    for (const key of keys) {
+      sortedArray = sortedArray.sort(function (a, b) {
+        let sortDirection = dir ? (a[key] > b[key]) : (a[key] < b[key]);
+        if (sortDirection) return -1;
+        if (!sortDirection) return 1;
+        return 0;
+      })
+    }
+  }
+  return sortedArray;
+}
+
+console.log(clientsArray);
+
+// Promise
+//   .all([getClientsArray()])
+//   .then(responses => {
+//     for (let response of responses) {
+//       console.log(response);
+//       renderClientsTable(response);
+//     }
+//   });
+clientsArray = await getClientsArray();
+renderClientsTable(clientsArray);
 console.log(clientsArray);
 
 
-// });
+});
