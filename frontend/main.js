@@ -6,46 +6,70 @@ const addClientBtn = document.querySelector('#addClientBtn');
 const toLocalFormat = new Intl.DateTimeFormat("ru");
 
 const loadingSVG = `
-    <svg class="table__svg" width="100" height="100" viewBox="0 0 100 100" fill="none"
-    xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#clip0_121_2401)">
-      <path
-        d="M14.0002 50.0005C14.0002 69.8825 30.1182 86.0005 50.0002 86.0005C69.8822 86.0005 86.0002 69.8825 86.0002 50.0005C86.0002 30.1185 69.8823 14.0005 50.0003 14.0005C45.3513 14.0005 40.9082 14.8815 36.8282 16.4865"
-        stroke="#9873FF" stroke-width="8" stroke-miterlimit="10" stroke-linecap="round"></path>
-    </g>
-  </svg>
-  `;
+<svg 
+  class="table__svg" 
+  width="100" 
+  height="100" 
+  viewBox="0 0 100 100" 
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <g clip-path="url(#clip0_121_2401)">
+    <path
+      d="M14.0002 50.0005C14.0002 69.8825 30.1182 86.0005 50.0002 86.0005C69.8822 86.0005 86.0002 69.8825 86.0002 50.0005C86.0002 30.1185 69.8823 14.0005 50.0003 14.0005C45.3513 14.0005 40.9082 14.8815 36.8282 16.4865"
+      stroke="#9873FF" stroke-width="8" stroke-miterlimit="10" stroke-linecap="round" 
+    />
+  </g>
+</svg>
+`;
+
 const addClientSVG = `
 <svg width="23" height="16" viewBox="0 0 23 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path id="Vector"
-            d="M14.5 8C16.71 8 18.5 6.21 18.5 4C18.5 1.79 16.71 0 14.5 0C12.29 0 10.5 1.79 10.5 4C10.5 6.21 12.29 8 14.5 8ZM5.5 6V3H3.5V6H0.5V8H3.5V11H5.5V8H8.5V6H5.5ZM14.5 10C11.83 10 6.5 11.34 6.5 14V16H22.5V14C22.5 11.34 17.17 10 14.5 10Z"/>
-        </svg>
-  `;
-const editCliendSVG = `
-<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="edit" opacity="0.7" clip-path="url(#clip0_216_219)">
-<path id="Vector" d="M2 11.5002V14.0002H4.5L11.8733 6.62687L9.37333 4.12687L2 11.5002ZM13.8067 4.69354C14.0667 4.43354 14.0667 4.01354 13.8067 3.75354L12.2467 2.19354C11.9867 1.93354 11.5667 1.93354 11.3067 2.19354L10.0867 3.41354L12.5867 5.91354L13.8067 4.69354Z" fill="#9873FF"/>
-</g>
-<defs>
-<clipPath id="clip0_216_219">
-<rect width="16" height="16" fill="white"/>
-</clipPath>
-</defs>
+  <path 
+    id="Vector" 
+    d="M14.5 8C16.71 8 18.5 6.21 18.5 4C18.5 1.79 16.71 0 14.5 0C12.29 0 10.5 1.79 10.5 4C10.5 6.21 12.29 8 14.5 8ZM5.5 6V3H3.5V6H0.5V8H3.5V11H5.5V8H8.5V6H5.5ZM14.5 10C11.83 10 6.5 11.34 6.5 14V16H22.5V14C22.5 11.34 17.17 10 14.5 10Z"
+  />
 </svg>
 `;
+
+const editClientSVG = `
+<svg 
+  width="16" 
+  height="16" 
+  viewBox="0 0 16 16" 
+  fill="none" 
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <g id="edit" opacity="0.7" clip-path="url(#clip0_216_219)">
+    <path 
+      id="Vector" 
+      d="M2 11.5002V14.0002H4.5L11.8733 6.62687L9.37333 4.12687L2 11.5002ZM13.8067 4.69354C14.0667 4.43354 14.0667 4.01354 13.8067 3.75354L12.2467 2.19354C11.9867 1.93354 11.5667 1.93354 11.3067 2.19354L10.0867 3.41354L12.5867 5.91354L13.8067 4.69354Z" fill="#9873FF"
+    />
+  </g>
+  <defs>
+    <clipPath id="clip0_216_219">
+      <rect width="16" height="16" fill="white"/>
+    </clipPath>
+  </defs>
+</svg>
+`;
+
 const deleteClientSVG = `
 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="cancel" opacity="0.7" clip-path="url(#clip0_216_224)">
-<path id="Vector" d="M8 2C4.682 2 2 4.682 2 8C2 11.318 4.682 14 8 14C11.318 14 14 11.318 14 8C14 4.682 11.318 2 8 2ZM8 12.8C5.354 12.8 3.2 10.646 3.2 8C3.2 5.354 5.354 3.2 8 3.2C10.646 3.2 12.8 5.354 12.8 8C12.8 10.646 10.646 12.8 8 12.8ZM10.154 5L8 7.154L5.846 5L5 5.846L7.154 8L5 10.154L5.846 11L8 8.846L10.154 11L11 10.154L8.846 8L11 5.846L10.154 5Z" fill="#F06A4D"/>
-</g>
-<defs>
-<clipPath id="clip0_216_224">
-<rect width="16" height="16" fill="white"/>
-</clipPath>
-</defs>
+  <g id="cancel" opacity="0.7" clip-path="url(#clip0_216_224)">
+    <path 
+      id="Vector" 
+      d="M8 2C4.682 2 2 4.682 2 8C2 11.318 4.682 14 8 14C11.318 14 14 11.318 14 8C14 4.682 11.318 2 8 2ZM8 12.8C5.354 12.8 3.2 10.646 3.2 8C3.2 5.354 5.354 3.2 8 3.2C10.646 3.2 12.8 5.354 12.8 8C12.8 10.646 10.646 12.8 8 12.8ZM10.154 5L8 7.154L5.846 5L5 5.846L7.154 8L5 10.154L5.846 11L8 8.846L10.154 11L11 10.154L8.846 8L11 5.846L10.154 5Z" fill="#F06A4D"
+    />
+  </g>
+  <defs>
+    <clipPath id="clip0_216_224">
+      <rect width="16" height="16" fill="white"/>
+    </clipPath>
+  </defs>
 </svg>
-
 `;
+
 const contactsType = [
   'Телефон',
   'Доп.телефон',
@@ -188,7 +212,7 @@ function renderClient(objClient) {
   $createdAtTime.textContent = getTime(objClient.createdAt);
   $updatedAtTime.textContent = getTime(objClient.updatedAt);;
 
-  $changeBtn.innerHTML = `${editCliendSVG} Изменить`;
+  $changeBtn.innerHTML = `${editClientSVG} Изменить`;
   $deleteBtn.innerHTML = `${deleteClientSVG} Удалить`;
 
   $createdAt.append($createdAtTime);
@@ -783,6 +807,4 @@ Promise
 // clientsArray = await getClientsArray();
 // renderClientsTable(clientsArray);
 console.log(clientsArray);
-
-
 // });
