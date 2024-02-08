@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
   <meta charset="UTF-8">
@@ -8,119 +8,68 @@
   <title>Список клиентов</title>
   <link href="img/favicon.svg" rel="icon" type="image/svg">
   <link href="css/normalize.css" rel="stylesheet">
+  <link href="css/_reset.scss" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
+  <link href="css/media.css" rel="stylesheet">
   <script src="main.js" defer></script>
 </head>
 
 
 <body class="page">
-  <div class="modal-overlay" id="modal">
-    <!-- <div class="modal" id="modal-box" data-target="addClient"> -->
-      <!-- <div class="modal-box modal__input">
-        <h5 class="title modal__title">Новый клиент</h5>
-        <button class="btn modal__close-btn" id="closeModal" type="button" data-btn="close"></button>
-        <form class="modal__form modal-form">
-          <label class="modal-form__label">
-            <input class="modal-form__input" id="surname" type="text" name="Фамилия" required>
-            <p class="modal-form__placeholder">
-              Фамилия
-              <span class="modal-form__placeholder-star">*</span>
-            </p>
-          </label>
-          <label class="modal-form__label">
-            <input class="modal-form__input" id="name" type="text" name="Имя" required>
-            <p class="modal-form__placeholder">
-              Имя
-              <span class="modal-form__placeholder-star">*</span>
-            </p>
-          </label>
-          <input class="modal-form__input" id="lastname" type="text" placeholder="Отчество" name="Отчество">
-        </form>
-      </div>
-      <div class="modal__contacts modal-contacts modal-contacts--form">
-        modal-contacts--form
-        <div class="modal-box modal-contacts__box" id="contacts-form">
-          <form class="modal-contacts__form">
-            <select class="modal-contacts__contact-select" id="contact-type" name="contact-type">
-              <option value="Телефон">Телефон</option>
-              <option value="Доп.телефон">Доп.телефон</option>
-              <option value="email">Email</option>
-              <option value="vk">Vk</option>
-              <option value="facebook">Facebook</option>
-            </select>
-            <input class="modal-contacts__input" id="contact-input" type="text" name="phone"
-              placeholder="Введите данные контакта"> -->
-<!-- после сохранения контакта -->
-            <!-- <button class="btn modal-contacts__delbtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path
-                  d="M6 0C2.682 0 0 2.682 0 6C0 9.318 2.682 12 6 12C9.318 12 12 9.318 12 6C12 2.682 9.318 0 6 0ZM6 10.8C3.354 10.8 1.2 8.646 1.2 6C1.2 3.354 3.354 1.2 6 1.2C8.646 1.2 10.8 3.354 10.8 6C10.8 8.646 8.646 10.8 6 10.8ZM8.154 3L6 5.154L3.846 3L3 3.846L5.154 6L3 8.154L3.846 9L6 6.846L8.154 9L9 8.154L6.846 6L9 3.846L8.154 3Z"
-                  fill="#B0B0B0" />
-              </svg>
-            </button> -->
-          <!-- </form> -->
-
-          <!-- <button class="btn modal-contacts__addbtn" data-btn="createContact" id="addContactBtn">Добавить
-            контакт</button>
-        </div>
-      </div>
-      <div class="modal-box modal__btns modal-btns">
-        <div class="modal-btns__error-field" id="errorField">
-        </div>
-        <button class="btn modal-btns__primary" id="saveBtn">Сохранить</button>
-        <button class="btn modal-btns__decline" id="declineBtn" data-btn="close">Отмена</button>
-      </div>
-    </div> -->
-  </div>
-
   <header class="header">
     <a class="link header__link" href="#">
       skb.
     </a>
-    <input class="header__input" type="text" placeholder="Введите запрос" name="search">
+    <form class="header__form">
+      <label class="visually-hidden" for="searchInput">Введите запрос</label>
+      <input class="input header__input" id="searchInput" aria-expanded="false" aria-label="search" type="text"
+        placeholder="Введите запрос" name="search" role="combobox">
+    </form>
   </header>
   <main>
-    <section class="container content" id="section">
+    <section class="container content">
       <h1 class="title content__title">Клиенты</h1>
-      <table class="content__table table">
-        <thead class="table__head">
-          <tr id="tableTR">
-            <th class="table__title" scope="col">
-              <button class="btn btn__table btn__table--id arrow" id="clientsId" data-dir="false">
-                ID
-              </button>
-            </th>
-            <th class="table__title " scope="col">
-              <button class="btn btn__table arrow" id="fullname" data-dir="false">
-                Фамилия Имя Отчество
-                <span class="table__fio">А-Я</span>
-              </button>
-            </th>
-            <th class="table__title" scope="col">
-              <button class="btn btn__table arrow" id="creationDate" data-dir="false">
-                Дата и время создания
-              </button>
-            </th>
-            <th class="table__title" scope="col">
-              <button class="btn btn__table arrow" id="changesDate" data-dir="false">
-                Последние изменения
-              </button>
-            </th>
-            <th class="table__title" scope="col">
-              <button class="btn btn__table" id="contacts" data-dir="false" disabled>
-                Контакты
-              </button>
-            </th>
-            <th class="table__title" scope="col">
-              <button class="btn btn__table" id="actionBtns" data-dir="false" disabled>
-                Действия
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody class="table__body" id="clientsTable">
-        </tbody>
-      </table>
+      <div class="content__table-wrap">
+        <table class="content__table table">
+          <thead class="table__head table-head">
+            <tr id="tableTR">
+              <th class="table__title" scope="col">
+                <button class="btn table-head__btn table-head__btn--id table-head__btn--firm arrow" id="clientsId" data-dir="false">
+                  ID
+                </button>
+              </th>
+              <th class="table__title " scope="col">
+                <button class="btn table-head__btn arrow" id="fullname" data-dir="false">
+                  Фамилия Имя Отчество
+                  <span class="table__fio">А-Я</span>
+                </button>
+              </th>
+              <th class="table__title" scope="col">
+                <button class="btn table-head__btn arrow" id="creationDate" data-dir="false">
+                  Дата&nbsp;и&nbsp;время создания
+                </button>
+              </th>
+              <th class="table__title" scope="col">
+                <button class="btn table-head__btn arrow" id="editDate" data-dir="false">
+                  Последние изменения
+                </button>
+              </th>
+              <th class="table__title" scope="col">
+                <span class="btn table-head__btn table__btn--span" id="contacts" data-dir="false">
+                  Контакты
+                </span>
+              </th>
+              <th class="table__title" scope="col">
+                <span class="btn table-head__btn table__btn--span" id="actionBtns" data-dir="false">
+                  Действия
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="table__body" id="clientsTable">
+          </tbody>
+        </table>
+      </div>
       <button class="btn content__btn visually-hidden" id="addClientBtn" data-path="addClient">
         <svg width="23" height="16" viewBox="0 0 23 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path id="Vector"

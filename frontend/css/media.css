@@ -1,0 +1,104 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v8.4.14,
+* Autoprefixer: v10.4.7
+* Browsers: last 4 version
+*/
+
+@media(max-width: 992px) {
+  .container {
+    padding: 0 20px;
+  }
+
+  .row__descr--date span {
+    display: block;
+    padding: 0;
+  }
+
+  .row__descr--btn {
+    -webkit-columns: 1;
+       -moz-columns: 1;
+            columns: 1;
+  }
+
+  .row__btn-edit {
+    margin-bottom: 5px;
+  }
+
+  .row__descr-light--id {
+    padding: 5px;
+  }
+
+  .row__descr--fullname {
+    min-width: 183px;
+  }
+}
+
+@media(max-width: 767px) {
+  .container {
+    padding: 0;
+  }
+
+  /*сделать отдельно скролл для заголовка+таблицы, без кнопки?*/
+  .content__title {
+    padding-left: 10px;
+  }
+
+  .content__table-wrap {
+    position: relative;
+    padding: 0 10px;
+    overflow: auto;
+  }
+
+  .table {
+    overflow-x: auto;
+  }
+
+  .header {
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    padding: 8px;
+  }
+
+  .content__title {
+    font-size: 18px;
+  }
+
+  .header__link {
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    font-size: 8.64px;
+  }
+
+  .header__input {
+    display: none;
+  }
+
+  .select__toggle {
+    padding: 10px 12px;
+    min-width: 110px;
+    line-height: normal;
+  }
+
+  .select__toggle::after {
+    right: 6px;
+  }
+
+  .modal-contacts__input {
+    padding: 9px 6px;
+    width: 100%;
+  }
+}
+
+@media(max-width:470px) {
+  .modal-box{
+    max-width: 300px;
+    padding: 0 15px;
+  }
+}
