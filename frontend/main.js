@@ -1,10 +1,11 @@
 (async () => {
   let clientsArray = [];
-  const clientsTable = document.querySelector('#clientsTable');
-  const addClientBtn = document.querySelector('#addClientBtn');
-  const searchInput = document.querySelector('#searchInput');
+  const clientsTable = document.getElementById('clientsTable');
+  const addClientBtn = document.getElementById('addClientBtn');
+  const searchInput = document.getElementById('searchInput');
   const toLocalFormat = new Intl.DateTimeFormat("ru");
   const SERVER_API_URL = `http://localhost:3000/api/clients`;
+  const tableColumnsCount = 6;
   //*----------SVG
   const loadingSVG = `
     <svg class="table__svg" width="100" height="100" viewBox="0 0 100 100" fill="none"
@@ -153,7 +154,7 @@
     const cell = document.createElement('td');
 
     cell.classList.add('table__loading');
-    cell.setAttribute('colspan', '6');
+    cell.setAttribute('colspan', `${tableColumnsCount}`);
     cell.innerHTML = text;
 
     row.append(cell);
@@ -207,32 +208,26 @@
         element.innerHTML = `${saveLoadSVG} ${element.textContent.trim()}`;
         break;
     };
-    return;
   }
   //*----------взаимодействие с сервером
   //получение всех данных с сервера
   async function getClientsArray() {
-    console.log('получение данных с сервера');
     cleanTable();
     loadingRow();
     addClientBtn.classList.add('visually-hidden');
     const response = await fetch(`${SERVER_API_URL}`);
     clientsArray = await response.json();
-    console.log('получение данных с сервера завершено');
     return clientsArray;
   }
   //получение данных клиента с сервера
   async function getClientServer(id) {
-    console.log('получение данных клиента с сервера');
     if (isOnline() === false) serverErrors();
     const response = await fetch(`${SERVER_API_URL}/${id}`);
     const clientElement = await response.json();
-    console.log('получение данных с сервера завершено');
     return clientElement;
   }
   //отправка данных на сервер
   async function createClientServer(client) {
-    console.log('createClientServer');
     if (isOnline() === false) serverErrors();
     const response = await fetch(`${SERVER_API_URL}`, {
       method: 'POST',
@@ -248,14 +243,11 @@
     });
 
     const newClient = await response.json();
-    console.log(response.status);
     serverErrors(response.status, newClient);
-    console.log('отправка студента на сервер', newClient);
     return newClient;
   }
   //изменение данных на серверe
   async function editClientServer(client, id) {
-    console.log('изменение данных на серверe');
     if (isOnline() === false) serverErrors();
     const response = await fetch(`${SERVER_API_URL}/${id}`, {
       method: 'PATCH',
@@ -270,14 +262,11 @@
       }
     });
     const newClient = await response.json();
-    console.log(response.status);
     serverErrors(response.status, newClient);
-    console.log('sending newStudent to server', newClient);
     return newClient;
   }
   //удаление клиента на серверe
   async function deleteClientServer(id) {
-    console.log('удаление клиента на серверe');
     if (isOnline() === false) serverErrors();
     const response = await fetch(`${SERVER_API_URL}/${id}`, {
       method: 'DELETE',
@@ -285,7 +274,6 @@
 
     const delResponse = await response.json();
     serverErrors(response.status, delResponse);
-    console.log('удален клиент', response.status);
     return;
   }
   //функция анализ ошибок с сервера
@@ -313,11 +301,9 @@
   async function searchRequest(inputValue) {
     const searchData = inputValue.trim();
     if (isSearchField()) searchForm.lastElementChild.remove();
-    console.log('пошло в отправку на сервер', searchData);
     const response = await fetch(`${SERVER_API_URL}?search=${searchData}`);
     clientsArray = await response.json();
     if (searchData) createResultField(clientsArray);
-    return;
   }
   //проверка наличия сети
   function isOnline() {
@@ -459,7 +445,6 @@
     });
     cell.append(contactsList);
     if (contactsList.childNodes.length > 5) hideExtraContacts(contactsList);
-    return
   }
   //функция скрытия контактов, если их больше 5
   function hideExtraContacts(contactsList) {
@@ -486,7 +471,6 @@
       contactsList.lastChild.remove();
     });
 
-    return
   }
   //функция создания элемента подсказки
   function createTooltip(text, element, id = false) {
@@ -834,7 +818,7 @@
       case 'add':
         if (contactsQty < 10) createContactSelect(form, contact);
         if (contactsQty >= 9) {
-          let addContactBtn = document.querySelector('#addContactBtn');
+          let addContactBtn = document.getElementById('addContactBtn');
           addContactBtn.classList.add('visually-hidden');
           addContactBtn.previousSibling.classList.add('modal-contacts__form--no-btn');
         }
@@ -845,13 +829,12 @@
           form.remove();
         }
         if (contactsQty === 10) {
-          let addContactBtn = document.querySelector('#addContactBtn');
+          let addContactBtn = document.getElementById('addContactBtn');
           addContactBtn.classList.remove('visually-hidden');
           addContactBtn.previousSibling.classList.remove('modal-contacts__form--no-btn');
         }
         break;
     }
-    return;
   }
   //функция отрисовки добавления контакта
   function createContactSelect(box, contact = false) {
@@ -863,7 +846,6 @@
     const $optionsList = document.createElement('ul');
 
     const $input = document.createElement('input');
-    const $deleteBtn = document.createElement('button');
 
     $contactBox.classList.add('modal-contacts__contact-box');
 
@@ -894,11 +876,7 @@
     $input.id = 'contact-input';
     $input.required = true;
 
-    $deleteBtn.classList.add('btn', 'modal-contacts__delbtn');
-    $deleteBtn.innerHTML = deleteContactSVG;
-    $deleteBtn.dataset.tooltip = `Удалить контакт`;
-    $deleteBtn.id = `deleteContactBtn`;
-    $deleteBtn.ariaLabel = 'Удалить контакт';
+    const $deleteBtn = createDeleteContactBtn();
 
     contactsType.forEach((typeItem) => {
       const $option = document.createElement('li');
@@ -920,9 +898,7 @@
 
     $deleteBtn.addEventListener('click', () => {
       ckechContactsQty(box, 'delete');
-      $customSelect.remove();
-      $input.remove();
-      $deleteBtn.remove();
+      $contactBox.remove();
     });
 
     $deleteBtn.onfocus = () => {
@@ -934,7 +910,8 @@
       $optionsList.firstElementChild.ariaSelected = true;
     };
     $customSelect.append($customSelectLabel, $selectBtn, $announcement, $optionsList);
-    $contactBox.append($customSelect, $input, $deleteBtn);
+    $contactBox.append($customSelect, $input);
+    if (contact) $contactBox.append($deleteBtn);
     box.append($contactBox);
 
     const customSelect = {
@@ -948,6 +925,7 @@
 
     $input.addEventListener('input', (e) => {
       e.target.classList.remove('modal-form__input--invalid');
+      $contactBox.append($deleteBtn);
     })
 
     document.addEventListener('click', (e) => {
@@ -988,8 +966,21 @@
         }
       }
     });
-    return;
+  };
+
+  //создание кнопки удалить контакт для инпута контакта клиента
+  function createDeleteContactBtn () {
+    const $deleteBtn = document.createElement('button');
+    $deleteBtn.classList.add('btn', 'modal-contacts__delbtn');
+    $deleteBtn.innerHTML = deleteContactSVG;
+    $deleteBtn.dataset.tooltip = `Удалить контакт`;
+    $deleteBtn.id = `deleteContactBtn`;
+    $deleteBtn.ariaLabel = 'Удалить контакт';
+
+    return $deleteBtn;
   }
+
+
   //*----------custom select
   //функция проверки открыт список опций или нет
   function isSelectOpen(customSelect) {
@@ -998,7 +989,6 @@
   //функция открытия/закрытия списка опций
   function toggleSelect(customSelect) {
     customSelect.wrap.classList.contains('select--show') ? closeSelect(customSelect) : openSelect(customSelect);
-    return;
   };
   //функция поиска текущего выбранного типа контактов
   function findSelectedOption(customSelect) {
@@ -1019,7 +1009,6 @@
     customSelect.button.focus();
     customSelect.button.textContent = currentSelectedOption.textContent;
     customSelect.wrap.classList.remove('select--show');
-    return;
   };
   //функция открытия списка
   function openSelect(customSelect) {
@@ -1028,7 +1017,6 @@
     const currentOptionIndex = findSelectedOption(customSelect).currentIndex;
     focusCurrentOption(customSelect, currentOptionIndex);
     customSelect.wrap.classList.add('select--show');
-    return;
   };
   //функция обработки клика по списку опций
   function handleClick(targetOption, customSelect, e) {
@@ -1048,7 +1036,6 @@
     if (isSelectOpen(customSelect)) {
       closeSelect(customSelect);
     }
-    return;
   };
   //функция обработки нажатия клавиш
   function handleKeyPress(e, customSelect) {
@@ -1097,7 +1084,6 @@
       }
       return;
     };
-    return;
   };
   //функция переключения клавишами (стрелками) опции при закрытом селекте
   function switchSelectedOption(customSelect, dir) {
@@ -1116,7 +1102,6 @@
     nextOption.setAttribute('aria-selected', true);
     let currentOptionIndex = findSelectedOption(customSelect).currentIndex;
     focusCurrentOption(customSelect, currentOptionIndex);
-    return;
   };
   //функция выделения текущей опции
   function focusCurrentOption(customSelect, currentIndex) {
@@ -1149,7 +1134,6 @@
     (currentOption.currentIndex < (customSelect.options.length - 1)) ? currentOption.currentIndex += 1 : currentOption.currentIndex = 0;
 
     focusCurrentOption(customSelect, currentOption.currentIndex);
-    return;
   };
   //функция переключения опции вверх
   function moveFocusUp(customSelect) {
@@ -1157,7 +1141,6 @@
     (currentOption.currentIndex > 0) ? currentOption.currentIndex -= 1 : currentOption.currentIndex = customSelect.options.length - 1;
 
     focusCurrentOption(customSelect, currentOption.currentIndex);
-    return;
   };
 
   //*----------функции валидации input
@@ -1292,11 +1275,11 @@
         case 'Телефон':
         case 'Доп.телефон':
           checkedInput = validatePhoneInput(inputElement);
-          alertText = `Поле ${inputElement.name} заполнено некорректно`;
+          alertText = `Поле ${inputElement.name} заполнено некорректно, недостаточно цифр`;
           break;
         case 'Email':
           checkedInput = validateEmailInput(inputElement);
-          alertText = `Поле ${inputElement.name} заполнено некорректно`;
+          alertText = `Поле ${inputElement.name} заполнено некорректно, проверьте наличие символа @ и доменного имени`;
           break;
         case 'Vk':
         case 'Facebook':
@@ -1318,14 +1301,13 @@
       alertText = `Поле ${inputElement.name} не заполнено`;
     };
     if (!checkedInput) {
-
       renderErrorField(alertText, inputElement);
     }
     return checkedInput;
   }
   //функция рендера содержания окна с ошибками (в модальном окне)
   function renderErrorField(text, inputElement = false) {
-    let errorfield = document.querySelector('#errorField');
+    let errorfield = document.getElementById('errorField');
     let alertInput = document.createElement('p');
     errorField.className = 'modal-btns__error-field';
     alertInput.classList.add('modal-btns__error');
@@ -1335,7 +1317,7 @@
   }
 
   //*----------сортировка
-  const clientsTableHead = document.querySelector('#tableTR');
+  const clientsTableHead = document.getElementById('tableTR');
   //сортировка по умолчанию по ID по возрастанию
   let dir = false;
   let keys = ['id'];
@@ -1379,7 +1361,7 @@
     return sortArrayElement(array, dir, keys, sortByElement);
   }
   //функция сортировки массива (по вводным данным)
-  function sortArrayElement(array, dir, keys, sortByElement = document.querySelector('#clientsId')) {
+  function sortArrayElement(array, dir, keys, sortByElement = document.getElementById('clientsId')) {
     let sortedArray = [...array];
 
     if (keys != undefined) {
@@ -1452,9 +1434,6 @@
         renderSearchResultItem(client, field);
       });
     };
-
-    const searchOptions = field.childNodes;
-    return;
   }
   //функция отрисовки одного варианта
   function renderSearchResultItem(clientObj, field) {
@@ -1488,8 +1467,6 @@
         return;
       };
     });
-
-    return;
   }
   //проверка наличия списка вариантов
   function isSearchField() {
@@ -1532,7 +1509,6 @@
         moveSearchFocusUp(field);
         break;
     }
-    return;
   }
   //функция, листать опции вниз
   function moveSearchFocusDown(field) {
@@ -1540,7 +1516,6 @@
     (selectedClient.currentIndex < (field.childNodes.length - 1)) ? selectedClient.currentIndex += 1 : selectedClient.currentIndex = 0;
 
     focusCurrentSearchResult(field, selectedClient.currentIndex);
-    return;
   };
   //функция, листать опции вверх
   function moveSearchFocusUp(field) {
@@ -1548,7 +1523,6 @@
     (selectedClient.currentIndex > 0) ? selectedClient.currentIndex -= 1 : selectedClient.currentIndex = field.childNodes.length - 1;
 
     focusCurrentSearchResult(field, selectedClient.currentIndex);
-    return;
   };
   //функция убирает поле результатов поиска и очищает инпут
   function closeSearchField(field) {
