@@ -300,7 +300,7 @@
   //функция поиска (сервер)
   async function searchRequest(inputValue) {
     const searchData = inputValue.trim();
-    if (isSearchField()) searchForm.lastElementChild.remove();
+    if (isSearchField()) removeSearchList();
     const response = await fetch(`${SERVER_API_URL}?search=${searchData}`);
     clientsArray = await response.json();
     if (searchData) createResultField(clientsArray);
@@ -317,12 +317,12 @@
       loadingRow('');
     } else {
       sortArray(clientsArray, sortByElement).forEach(element => {
-        renderClient(element);
+        clientsTable.append(renderClientRow(element));
       });
     }
   }
   //создание функции отрисовки клиента в таблице
-  function renderClient(objClient) {
+  function renderClientRow(objClient) {
     const $row = document.createElement('tr');
     const $clientsId = document.createElement('td');
     const $fullname = document.createElement('td');
@@ -368,8 +368,6 @@
     $actionBtns.append($changeBtn, $deleteBtn);
     $row.append($clientsId, $fullname, $createdAt, $updatedAt, $contacts, $actionBtns);
 
-    clientsTable.append($row);
-
     //отслеживание нажатий на кнопки действий
     $deleteBtn.addEventListener('click', async () => {
       $deleteBtn.disabled = true; //убрать возможность нажимать на кнопки при открытии модального окна
@@ -395,6 +393,8 @@
       history.pushState(null, null, `#client${objClient.id}`);
       if (isOnline() === false) serverErrors();
     });
+
+    return $row;
   }
   //функция отрисовки времени (вставляет 0 перед минутами/часами при необходимости)
   function getTime(objTime) {
@@ -416,6 +416,7 @@
       tooltip = document.createElement('div');
       li.append(btn);
       contactsList.append(li);
+      btn.ariaLabel = `контакт ${contact.type}: ${contact.value}`;
       switch (contact.type) {
         case 'Телефон':
           btn.innerHTML = phoneContactSVG;
@@ -454,6 +455,7 @@
     const li = document.createElement('li');
     const btn = document.createElement('button');
     btn.classList.add('btn', 'row__contacts-btn', 'row__contacts-btn--elliplse');
+    btn.ariaLabel = 'Показать остальные контакты';
     btn.textContent = '+' + (quantity - 4);
     li.append(btn);
     contactsList.append(li);
@@ -926,7 +928,12 @@
     $input.addEventListener('input', (e) => {
       e.target.classList.remove('modal-form__input--invalid');
       $contactBox.append($deleteBtn);
-    })
+    });
+
+    $input.addEventListener('input', (e) => {
+      e.target.classList.remove('modal-form__input--invalid');
+      $contactBox.append($deleteBtn);
+    });
 
     document.addEventListener('click', (e) => {
       e.preventDefault();
@@ -967,9 +974,8 @@
       }
     });
   };
-
   //создание кнопки удалить контакт для инпута контакта клиента
-  function createDeleteContactBtn () {
+  function createDeleteContactBtn() {
     const $deleteBtn = document.createElement('button');
     $deleteBtn.classList.add('btn', 'modal-contacts__delbtn');
     $deleteBtn.innerHTML = deleteContactSVG;
@@ -1325,6 +1331,7 @@
   //функция сортировки массива сервера по текущим вводным по клику/по входящего массиву
   function sortArray(array, sortByElement) {
     clientsTableHead.onclick = async function (e) {
+      e.preventDefault();
       //убираем стрелки в начальное положение, чтобы менять только нужную
       let tableHeadBtns = this.querySelectorAll('.arrow');
       tableHeadBtns.forEach((btn) => btn.classList.remove('arrow--rotate', 'table-head__btn--firm'));
@@ -1355,7 +1362,6 @@
         dir = false;
       };
       sortByElement.dataset.dir = !dir;
-      clientsArray = await getClientsArray();
       renderClientsTable(clientsArray, sortByElement);
     }
     return sortArrayElement(array, dir, keys, sortByElement);
@@ -1366,7 +1372,7 @@
 
     if (keys != undefined) {
       for (const key of keys) {
-        sortedArray = sortedArray.sort(function (a, b) {
+        sortedArray.sort(function (a, b) {
           let sortDirection = dir ? (a[key] > b[key]) : (a[key] < b[key]);
           if (sortDirection) return -1;
           if (!sortDirection) return 1;
@@ -1406,7 +1412,7 @@
     let target = e.target;
     //при клике вне формы закрыть/удалить выделение с ряда
     if (!searchForm.contains(target) && isSearchField()) {
-      searchForm.querySelector('ul').remove();
+      removeSearchList();
       searchInput.ariaExpanded = 'false';
       return;
     };
@@ -1461,7 +1467,7 @@
         chosenRow.scrollIntoView({
           block: 'nearest',
         });
-        field.remove();
+        removeSearchList();
         searchInput.ariaExpanded = 'false';
         searchInput.value = '';
         return;
@@ -1472,6 +1478,11 @@
   function isSearchField() {
     const field = searchForm.querySelector('ul');
     return !!field;
+  }
+  //очистка поля вариантов и блока для озвучки выбранного варианта
+  function removeSearchList() {
+    searchForm.lastElementChild.remove();
+    searchForm.querySelectorAll('[role="alert"]').forEach((div) => div.remove());
   }
   //функция озвучки выбранного варианта
   function announceClient(text, field) {
@@ -1527,7 +1538,7 @@
   //функция убирает поле результатов поиска и очищает инпут
   function closeSearchField(field) {
     selectClient(field);
-    field.remove();
+    removeSearchList();
     searchInput.ariaExpanded = 'false';
     searchInput.value = '';
   }
