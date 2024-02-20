@@ -37,8 +37,7 @@ img {
     url("../fonts/open-sans-regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
-  /* font-display: swap; */
-  font-display: block;
+  font-display: swap;
 }
 
 @font-face {
@@ -48,8 +47,7 @@ img {
     url("../fonts/open-sans-semiBold.woff") format("woff");
   font-weight: 600;
   font-style: normal;
-  /* font-display: swap; */
-  font-display: block;
+  font-display: swap;
 }
 
 @font-face {
@@ -59,8 +57,7 @@ img {
     url("../fonts/open-sans-bold.woff") format("woff");
   font-weight: 700;
   font-style: normal;
-  /* font-display: swap; */
-  font-display: block;
+  font-display: swap;
 }
 
 /*end fonts*/
@@ -368,6 +365,22 @@ img {
 .table__title {
   padding-bottom: 5px;
   min-height: 26px;
+}
+
+.table__title:first-child{
+  width: 9%;
+}
+
+.table__title:nth-child(2){
+  width: 30%;
+}
+
+.table__title:nth-child(3), :nth-child(4){
+  width: 15%;
+}
+
+.table__title:nth-child(5){
+  width: 12%;
 }
 
 .table-head__btn {
