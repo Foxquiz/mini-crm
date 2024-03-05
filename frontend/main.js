@@ -292,8 +292,8 @@
         break;
       default:
         renderErrorField('Что-то пошло не так ...');
-        let deleteBtn = modalOverlay.querySelector('[data-btn="deleteModal"]');
-        let saveBtn = modalOverlay.querySelector('[data-btn="saveModal"]');
+        const deleteBtn = modalOverlay.querySelector('[data-btn="deleteModal"]');
+        const saveBtn = modalOverlay.querySelector('[data-btn="saveModal"]');
         if (deleteBtn) deleteBtn.disabled = true;
         if (saveBtn) saveBtn.disabled = true;
         return false
@@ -412,8 +412,8 @@
     const contactsList = document.createElement('ul');
     contactsList.classList.add('row__contacts');
     contactsArray.forEach((contact) => {
-      let li = document.createElement('li');
-      let btn = document.createElement('button');
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
       btn.classList.add('btn', 'row__contacts-btn');
       tooltip = document.createElement('div');
       li.append(btn);
@@ -451,8 +451,8 @@
   }
   //функция скрытия контактов, если их больше 5
   function hideExtraContacts(contactsList) {
-    let contactsElements = contactsList.childNodes;
-    let quantity = contactsElements.length;
+    const contactsElements = contactsList.childNodes;
+    const quantity = contactsElements.length;
 
     const li = document.createElement('li');
     const btn = document.createElement('button');
@@ -467,7 +467,7 @@
     };
 
     btn.addEventListener('click', () => {
-      let contactsElements = contactsList.querySelectorAll('li');
+      const contactsElements = contactsList.querySelectorAll('li');
       contactsElements.forEach((element) => {
         element.classList.remove('visually-hidden');
         element.removeAttribute('hidden');
@@ -491,7 +491,7 @@
     element.append(tooltipWrap);
 
     //позиционируем его сверху от элемента (top-center)
-    let coords = element.getBoundingClientRect();
+    const coords = element.getBoundingClientRect();
 
     let left = coords.left + ((element.offsetWidth - tooltipElem.offsetWidth) / 2);
     if (left < 0) left = 0; // не заезжать за левый край окна
@@ -530,7 +530,7 @@
   //формирование содержимого tooltip
   function createInnerTooltip(text, id) {
     let $innerTooltip;
-    let splittedText = text.split(': ');
+    const splittedText = text.split(': ');
     if (splittedText.length === 1 && id === `deleteContactBtn`) return $innerTooltip = `<span class="tooltip__text">${splittedText[0]}</span>`;
     if (splittedText.length === 1 && id !== `deleteContactBtn`) {
       const formattedValue = formatPhoneValue(splittedText[0]);
@@ -582,7 +582,7 @@
     modalOverlay.classList.add('modal-overlay--visible');
 
     //скрытие скролла
-    let scroll = window.innerWidth - document.body.clientWidth;
+    const scroll = window.innerWidth - document.body.clientWidth;
     document.body.style.setProperty(`--scroll-width`, scroll);
     document.body.classList.add(`page--overflow`);
 
@@ -757,7 +757,7 @@
           break;
         case 'saveModal': //сохранить клиента
           $errorField.replaceChildren();
-          let client = {
+          const client = {
             surname: validateInput($inputSurname),
             name: validateInput($inputName),
             lastName: validateInput($inputLastName),
@@ -839,7 +839,7 @@
   }
   //вызов функции закрытия модального окна
   document.addEventListener('click', (e) => {
-    let btn = e.target.getAttribute('data-btn');
+    const btn = e.target.getAttribute('data-btn');
     if (e.target == modalOverlay || btn === 'close') {
       closeModal()
     }
@@ -855,12 +855,12 @@
   }
   //функция проверки кол-ва контактов при вызове (отрисовка, скрытие/показ кнопки добавления)
   function ckechContactsQty(form, action, contact) {
-    let contactsQty = form.querySelectorAll('#contact-type').length;
+    const contactsQty = form.querySelectorAll('#contact-type').length;
     switch (action) {
       case 'add':
         if (contactsQty < 10) createContactSelect(form, contact);
         if (contactsQty >= 9) {
-          let addContactBtn = document.getElementById('addContactBtn');
+          const addContactBtn = document.getElementById('addContactBtn');
           addContactBtn.classList.add('visually-hidden');
           addContactBtn.previousSibling.classList.add('modal-contacts__form--no-btn');
         }
@@ -871,7 +871,7 @@
           form.remove();
         }
         if (contactsQty === 10) {
-          let addContactBtn = document.getElementById('addContactBtn');
+          const addContactBtn = document.getElementById('addContactBtn');
           addContactBtn.classList.remove('visually-hidden');
           addContactBtn.previousSibling.classList.remove('modal-contacts__form--no-btn');
         }
@@ -970,11 +970,6 @@
       $contactBox.append($deleteBtn);
     });
 
-    $input.addEventListener('input', (e) => {
-      e.target.classList.remove('modal-form__input--invalid');
-      $contactBox.append($deleteBtn);
-    });
-
     document.addEventListener('click', (e) => {
       handleClick(e.target, customSelect, e);
       $input.type = defineContactInputType(customSelect).inputType;
@@ -1049,7 +1044,7 @@
   };
   //функция закрытия списка
   function closeSelect(customSelect) {
-    let currentSelectedOption = findSelectedOption(customSelect).selectedOption;
+    const currentSelectedOption = findSelectedOption(customSelect).selectedOption;
     customSelect.button.setAttribute('aria-expanded', false);
     customSelect.button.focus();
     customSelect.button.textContent = currentSelectedOption.textContent;
@@ -1132,7 +1127,7 @@
   };
   //функция переключения клавишами (стрелками) опции при закрытом селекте
   function switchSelectedOption(customSelect, dir) {
-    let selectedOption = customSelect.optionsList.querySelector('[aria-selected="true"]');
+    const selectedOption = customSelect.optionsList.querySelector('[aria-selected="true"]');
     let nextOption;
     switch (dir) {
       case 'next':
@@ -1145,12 +1140,12 @@
     customSelect.button.textContent = nextOption.textContent;
     selectedOption.setAttribute('aria-selected', false);
     nextOption.setAttribute('aria-selected', true);
-    let currentOptionIndex = findSelectedOption(customSelect).currentIndex;
+    const currentOptionIndex = findSelectedOption(customSelect).currentIndex;
     focusCurrentOption(customSelect, currentOptionIndex);
   };
   //функция выделения текущей опции
   function focusCurrentOption(customSelect, currentIndex) {
-    let currentOption = customSelect.options[currentIndex];
+    const currentOption = customSelect.options[currentIndex];
     customSelect.options.forEach((option) => {
       option.ariaSelected = false;
       option.classList.remove('select__option-hover');
@@ -1221,7 +1216,7 @@
         break;
       case 'Телефон':
       case 'Доп.телефон':
-        inputElement.value = validatePhone(inputElement, e);
+        validatePhone(inputElement, e);
         break;
       default:
         inputType = 'text';
@@ -1231,22 +1226,19 @@
   }
   //функция маски номера телефона
   function validatePhone(inputElement, e = '') {
-    let formattedValue;
-    let numbers = getNumbersInputValue(inputElement);
-    let selectionStart = inputElement.selectionStart;
+    const numbers = getNumbersInputValue(inputElement);
+    const selectionStart = inputElement.selectionStart;
 
     if (!numbers) return inputElement.value = '';
-
     if (selectionStart != inputElement.value.length) {
       if (e.data && /\D/g.test(e.data)) {
         inputElement.value = numbers;
       };
       return;
     };
+    const formattedValue = formatPhoneValue(numbers);
 
-    formattedValue = formatPhoneValue(numbers);
-
-    return formattedValue;
+    return inputElement.value = formattedValue;
   };
 
   function formatPhoneValue(numbers) {
@@ -1278,14 +1270,12 @@
   }
   //функция постпроверки корректности введённого телефона (кол-во цифр)
   function validatePhoneInput(inputElement) {
-    let numbers = getNumbersInputValue(inputElement);
+    const numbers = getNumbersInputValue(inputElement);
     return numbers.length < 11 ? false : numbers;
   }
   //функция постпроверки корректности введённого email (@, '.')
   function validateEmailInput(inputElement) {
-    // let regexp = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
     const regexp = /@.+\..+/i;
-
     return regexp.test(textToLowerCase(inputElement.value)) ? inputElement.value.trim() : false;
   }
   //функция постпроверки корректности facebook, vk (просто убирает лишние пробелы)
@@ -1361,7 +1351,7 @@
   }
   //функция рендера содержания окна с ошибками (в модальном окне)
   function renderErrorField(text, inputElement = false) {
-    let errorfield = document.getElementById('errorField');
+    const errorfield = document.getElementById('errorField');
     let alertInput = document.createElement('p');
     errorField.className = 'modal-btns__error-field';
     alertInput.classList.add('modal-btns__error');
@@ -1456,7 +1446,7 @@
   });
   //отслеживание кликов вне инпута и вариантов
   document.addEventListener('click', (e) => {
-    let target = e.target;
+    const target = e.target;
     //при клике вне формы закрыть/удалить выделение с ряда
     if (!searchForm.contains(target) && isSearchField()) {
       removeSearchList();
@@ -1505,10 +1495,10 @@
     field.append(item);
 
     document.addEventListener('click', (e) => {
-      let target = e.target;
+      const target = e.target;
       if (item.contains(target) && isSearchField()) {
-        let targetId = target.href.split('#')[1];
-        let chosenRow = document.getElementById(`${targetId}`);
+        const targetId = target.href.split('#')[1];
+        const chosenRow = document.getElementById(`${targetId}`);
         chosenRow.classList.add('row--chosen');
         chosenRow.scrollIntoView({
           block: 'nearest',
