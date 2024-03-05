@@ -304,8 +304,8 @@
     const searchData = inputValue.trim();
     if (isSearchField()) removeSearchList();
     const response = await fetch(`${SERVER_API_URL}?search=${searchData}`);
-    clientsArray = await response.json();
-    if (searchData) createResultField(clientsArray);
+    const searchResult = await response.json();
+    if (searchData) createResultField(searchResult);
   }
   //проверка наличия сети
   function isOnline() {
