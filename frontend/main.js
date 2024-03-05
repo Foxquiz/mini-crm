@@ -1237,7 +1237,7 @@
   }
   //функция постпроверки корректности введённого email (@, '.')
   function validateEmailInput(inputElement) {
-    let regexp = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
+    const regexp = /@.+\..+/i;
     return regexp.test(textToLowerCase(inputElement.value)) ? inputElement.value.trim() : false;
   }
   //функция постпроверки корректности facebook, vk (просто убирает лишние пробелы)
@@ -1247,7 +1247,7 @@
   //функции валидации текста:
   function validateText(text) {
     let checkedText = false;
-    const regexp = /[^а-яА-ЯёЁ\s]/gi;
+    const regexp = /[0-9]/;
     if (text.length > 0 && !regexp.test(text)) checkedText = text;
     return checkedText;
   };
