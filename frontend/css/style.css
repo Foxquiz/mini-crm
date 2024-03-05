@@ -616,10 +616,14 @@ img {
   transform: scale(1.2);
 }
 
-.tooltip {
+.tooltip-wrap {
   position: fixed;
-  text-align: center;
+}
+
+.tooltip {
+  position: relative;
   padding: 7px 17px;
+  text-align: center;
   white-space: nowrap;
   font-size: 12px;
   font-style: normal;

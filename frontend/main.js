@@ -5,7 +5,9 @@
   const searchInput = document.getElementById('searchInput');
   const toLocalFormat = new Intl.DateTimeFormat("ru");
   const SERVER_API_URL = `http://localhost:3000/api/clients`;
-  const tableColumnsCount = 6;
+  const TABLE_COLUMNS_COUNT = 6;
+  const TOOLTIP_OFFSET = 7;
+
   //*----------SVG
   const loadingSVG = `
     <svg class="table__svg" width="100" height="100" viewBox="0 0 100 100" fill="none"
@@ -154,7 +156,7 @@
     const cell = document.createElement('td');
 
     cell.classList.add('table__loading');
-    cell.setAttribute('colspan', `${tableColumnsCount}`);
+    cell.setAttribute('colspan', `${TABLE_COLUMNS_COUNT}`);
     cell.innerHTML = text;
 
     row.append(cell);
@@ -476,16 +478,17 @@
   }
   //функция создания элемента подсказки
   function createTooltip(text, element, id = false) {
-    tooltipElem = document.createElement('div');
+    cleanTooltips();
+    const tooltipWrap = document.createElement('div');
+    const tooltipElem = document.createElement('div');
+    tooltipWrap.className = 'tooltip-wrap';
     tooltipElem.className = 'tooltip';
-    let splittedText = text.split(': ');
 
-    //текст для отображения в подсказке
-    tooltipElem.innerHTML = splittedText.length === 1
-      ? `${splittedText[0]}`
-      : `<span class="tooltip__text">${splittedText[0]}: </span><span class="tooltip__data">${splittedText[1]}</span>`;
+    //содержимое для отображения в подсказке
+    tooltipElem.innerHTML = createInnerTooltip(text, id);
 
-    element.append(tooltipElem);
+    tooltipWrap.append(tooltipElem);
+    element.append(tooltipWrap);
 
     //позиционируем его сверху от элемента (top-center)
     let coords = element.getBoundingClientRect();
@@ -493,37 +496,74 @@
     let left = coords.left + ((element.offsetWidth - tooltipElem.offsetWidth) / 2);
     if (left < 0) left = 0; // не заезжать за левый край окна
 
-    let top = coords.top - (tooltipElem.offsetHeight + 7);
-    if (id === `deleteContactBtn`) top = coords.top - tooltipElem.offsetHeight + 5;
+    let top = coords.top - (tooltipElem.offsetHeight + TOOLTIP_OFFSET);
+    tooltipWrap.style.paddingBottom = TOOLTIP_OFFSET + 'px';
+    if (id === `deleteContactBtn`) {
+      top = coords.top - tooltipElem.offsetHeight + TOOLTIP_OFFSET;
+      tooltipWrap.style.paddingBottom = TOOLTIP_OFFSET;
+    }
 
     if (top < 0) { // если подсказка не помещается сверху, то отображать её снизу
       tooltipElem.classList.add('tooltip-reverse');
-      top = coords.top + element.offsetHeight + 7;
-      if (id === `deleteContactBtn`) top = coords.top + element.offsetHeight - 7;
+      top = coords.top + element.offsetHeight;
+      tooltipWrap.style.paddingTop = TOOLTIP_OFFSET + 'px';
+
+      if (id === `deleteContactBtn`) top = coords.top + element.offsetHeight - TOOLTIP_OFFSET;
     }
 
-    tooltipElem.style.left = left + 'px';
-    tooltipElem.style.top = top + 'px';
+    tooltipWrap.style.left = left + 'px';
+    tooltipWrap.style.top = top + 'px';
 
-    document.onmouseout = function () {
-      if (tooltipElem) {
-        tooltipElem.remove();
+    element.addEventListener("mouseleave", (e) => {
+      if (tooltipWrap) {
+        tooltipWrap.remove();
       }
-    };
+    });
 
-    element.onblur = () => {
-      if (tooltipElem) {
-        tooltipElem.remove();
+    element.addEventListener("blur", () => {
+      if (tooltipWrap) {
+        tooltipWrap.remove();
       }
+    });
+  };
+
+  //формирование содержимого tooltip
+  function createInnerTooltip(text, id) {
+    let $innerTooltip;
+    let splittedText = text.split(': ');
+    if (splittedText.length === 1 && id === `deleteContactBtn`) return $innerTooltip = `<span class="tooltip__text">${splittedText[0]}</span>`;
+    if (splittedText.length === 1 && id !== `deleteContactBtn`) {
+      const formattedValue = formatPhoneValue(splittedText[0]);
+      return $innerTooltip = `<a tabindex="-1" href='tel:${formattedValue}'>${formattedValue}</a>`;
     };
+    if (splittedText[0].includes('телефон')) {
+      const formattedValue = formatPhoneValue(splittedText[1]);
+      return $innerTooltip = `<span class="tooltip__text">${splittedText[0]}: </span>
+      <a tabindex="-1" href='tel:${formattedValue}'>${formattedValue}</a>`;
+    };
+    if (splittedText[0].includes('Email')) {
+      return $innerTooltip =
+        `<span class="tooltip__text">${splittedText[0]}: </span>
+       <a tabindex="-1" href="mailto:${splittedText[1]}" class="tooltip__data">${splittedText[1]}</a>`;
+    }
+
+    $innerTooltip = `<span class="tooltip__text">${splittedText[0]}: </span>
+    <span class="tooltip__data">${splittedText[1]}</span>`;
+
+    return $innerTooltip;
   }
   //отслеживание наведения мыши на кнопку с tooltip
-  document.onmouseover = function (e) {
-    let target = e.target;
-    let tooltipHtml = target.dataset.tooltip;
-    let elementId = target.id;
+  document.addEventListener("mouseover", (e) => {
+    const target = e.target;
+    const tooltipHtml = target.dataset.tooltip;
+    const elementId = target.id;
     if (tooltipHtml) createTooltip(tooltipHtml, target, elementId);
-  };
+  });
+
+  function cleanTooltips() {
+    const tooltipHtml = Array.from(document.getElementsByClassName('tooltip-wrap'));
+    tooltipHtml.forEach((item) => item.remove());
+  }
 
   //*----------модальные окна
   const modalOverlay = document.createElement('div');
@@ -936,7 +976,6 @@
     });
 
     document.addEventListener('click', (e) => {
-      e.preventDefault();
       handleClick(e.target, customSelect, e);
       $input.type = defineContactInputType(customSelect).inputType;
       $input.name = defineContactInputType(customSelect).contactType;
@@ -1026,7 +1065,7 @@
   };
   //функция обработки клика по списку опций
   function handleClick(targetOption, customSelect, e) {
-    e.stopPropagation();
+    e.preventDefault();
     if (targetOption === customSelect.button) {
       toggleSelect(customSelect);
       return;
@@ -1182,7 +1221,7 @@
         break;
       case 'Телефон':
       case 'Доп.телефон':
-        validatePhone(inputElement, e);
+        inputElement.value = validatePhone(inputElement, e);
         break;
       default:
         inputType = 'text';
@@ -1193,7 +1232,6 @@
   //функция маски номера телефона
   function validatePhone(inputElement, e = '') {
     let formattedValue;
-    let firstSymbols;
     let numbers = getNumbersInputValue(inputElement);
     let selectionStart = inputElement.selectionStart;
 
@@ -1206,6 +1244,14 @@
       return;
     };
 
+    formattedValue = formatPhoneValue(numbers);
+
+    return formattedValue;
+  };
+
+  function formatPhoneValue(numbers) {
+    let formattedValue;
+    let firstSymbols;
     if (['7', '8', '9'].includes(numbers[0])) {
       if (numbers[0] === '9') numbers = `7${numbers}`;
       firstSymbols = (numbers[0] === '8') ? '8' : '+7';
@@ -1228,7 +1274,7 @@
       //не рф
       formattedValue = `+${numbers.substring(0, 16)}`; //обрезать лишнее
     };
-    return inputElement.value = formattedValue;
+    return formattedValue;
   }
   //функция постпроверки корректности введённого телефона (кол-во цифр)
   function validatePhoneInput(inputElement) {
@@ -1237,7 +1283,9 @@
   }
   //функция постпроверки корректности введённого email (@, '.')
   function validateEmailInput(inputElement) {
+    // let regexp = new RegExp('[a-z0-9]+@[a-z]+\\.[a-z]{2,3}');
     const regexp = /@.+\..+/i;
+
     return regexp.test(textToLowerCase(inputElement.value)) ? inputElement.value.trim() : false;
   }
   //функция постпроверки корректности facebook, vk (просто убирает лишние пробелы)
@@ -1408,7 +1456,6 @@
   });
   //отслеживание кликов вне инпута и вариантов
   document.addEventListener('click', (e) => {
-    e.preventDefault();
     let target = e.target;
     //при клике вне формы закрыть/удалить выделение с ряда
     if (!searchForm.contains(target) && isSearchField()) {
@@ -1458,7 +1505,6 @@
     field.append(item);
 
     document.addEventListener('click', (e) => {
-      e.preventDefault();
       let target = e.target;
       if (item.contains(target) && isSearchField()) {
         let targetId = target.href.split('#')[1];
