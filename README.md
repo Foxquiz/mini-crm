@@ -21,6 +21,12 @@
 </ul>
 
 <p>Модули только для иконок, т.к. по программе на момент выполнения работы модулей ещё не было.</p>
+### Запуск режима разработки
+
+```sh
+backend: node index
+frontend: e.g., live server
+```
 
 <img src='https://i.postimg.cc/PfFBnMLJ/2024-03-05-160110.png' alt='внешний вид таблицы'>
 <img src='https://i.postimg.cc/WzrwdrVR/2024-03-05-161045.png' alt='выпадающий поиск'>
